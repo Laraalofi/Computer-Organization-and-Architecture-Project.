@@ -1,0 +1,107 @@
+.data
+
+startMassage: .asciiz "Please enter a digits in Octal number (Consist three digit ):\n "
+result: .asciiz "The Decimal equivalent is:\n "
+error: .asciiz "Error!!! the program is finished:\n "
+
+.text
+
+main:
+ # load the service 4 is to print string
+ li $v0, 4
+ # address of string in memory of the startMassage
+ la $a0, startMassage
+ # print startMassage
+ syscall
+
+ # load the service 5 to read intger
+ li $v0, 5
+ # to read the octal number from user
+ syscall
+
+ # store the result in &t0
+ move $t0, $v0
+
+ # load 0 into $t1
+ # decimal value in loop
+ li $t1, 0
+
+ # load 1 into $t2
+ # i value in loop
+ li $t2, 1
+
+ # initialization value to cheack if input between 100 and 999
+
+ li $t3,100 #b
+ li $t4,999 #c
+
+ # input a<b 100, if the condition is true jump to error1 method to finished program
+ blt $t0,$t3,error1
+
+ # input a>c 999, if the condition is true jump to error1 method
+ bgt $t0,$t4,error1
+
+ # input a>=b 100, if the condition is true jump to grater method
+ bge $t0,$t3,grater
+
+ grater:
+
+ # input a<=c 999, if the condition is true jump to loop
+ ble $t0,$t4,loop
+loop:
+ # get the last digit in $t5 using remainder
+ rem $t5, $t0, 10
+
+ # remove the last digit from $t0 using division
+ div $t0, $t0, 10
+
+ # multiply the last digit by 8^i
+ mul $t5, $t5, $t2
+
+ # add $t5 to $t1 , $t1=0
+ add $t1, $t1, $t5
+
+ # multiply $t2 by 8
+ mul $t2, $t2, 8
+
+ # branch to loop if $t0 is not 0 will go to loop agian
+ bne $t0, $zero, loop
+
+ # move $t1 >> the result from loop to $t0
+ move $t0, $t1
+
+
+ # finshed the loop #
+
+
+ # print the result
+ # load the service 4 is to print string
+ li $v0, 4
+ # address of string in memory of the result message
+ la $a0, result
+ syscall
+ # print the decimal equivalent
+ # move $t0 to $a0
+ move $a0, $t0
+ # load the service 1 is to print integer
+ li $v0, 1
+ syscall
+
+
+exit:
+ # by this exit program
+ li $v0, 10
+ # print the result message
+ syscall
+
+error1:
+ # load the service 4 is to print string
+ li $v0, 4
+ # address of string in memory of the error message
+ la $a0, error
+ # print the result
+ syscall
+ # exit program
+ li $v0, 10
+ # print the result message
+ syscall
